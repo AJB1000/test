@@ -1,6 +1,6 @@
 // sw.js — Cache minimal pour fonctionner hors ligne
 
-const CACHE_NAME = 'v21';
+const CACHE_NAME = 'v22';
 const urlsToCache = [
     './',
     './index.html',
@@ -16,6 +16,7 @@ self.addEventListener('install', (event) => {
         caches.open(CACHE_NAME)
             .then((cache) => cache.addAll(urlsToCache))
     );
+    self.skipWaiting();
 });
 
 // Activation : supprime les anciens caches
@@ -31,6 +32,7 @@ self.addEventListener('activate', (event) => {
             );
         })
     );
+    self.clients.claim();
 });
 
 // Récupération : sert index.html pour toute requête racine
