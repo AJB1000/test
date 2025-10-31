@@ -1,97 +1,49 @@
-// sw.js — Cache minimal pour fonctionner hors ligne
-
-const CACHE_NAME = 'v28';
+const CACHE_NAME = 'pwa-git01-v1';
 const BASE_URL = self.location.pathname.replace(/sw\.js$/, '');
+
 const urlsToCache = [
     `${BASE_URL}`,
     `${BASE_URL}index.html`,
     `${BASE_URL}script.js`,
     `${BASE_URL}manifest.json`,
-    `${BASE_URL}icon-192.png`,
-    `${BASE_URL}icon-512.png`
+    `${BASE_URL}icons/icon-192.png`,
+    `${BASE_URL}icons/icon-512.png`
 ];
 
-// Installation : cache les ressources
+// Installation et mise en cache
 self.addEventListener('install', event => {
-    console.log('[SW] Install event');
-    event.waitUntil(
-        caches.open(CACHE_NAME).then((cache) => cache.addAll(urlsToCache))
-            .then(() => {
-                console.log('[SW] Cache populated successfully');
-                self.skipWaiting(); // active immédiatement le nouveau SW
-            })
-            .catch(err => {
-                console.error('[SW] Cache addAll failed:', err);
-            })
-    );
-});
-
-self.addEventListener('install', (event) => {
-    event.waitUntil(
-        caches.open(CACHE_NAME)
-            .then((cache) => cache.addAll(urlsToCache))
-    );
+    console.log('[SW] Installation');
     self.skipWaiting();
+    event.waitUntil(
+        caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
+    );
 });
 
-// Activation : supprime les anciens caches
-self.addEventListener('activate', (event) => {
+// Activation : suppression anciens caches
+self.addEventListener('activate', event => {
+    console.log('[SW] Activation');
+    self.clients.claim();
     event.waitUntil(
-        caches.keys().then((cacheNames) => {
-            return Promise.all(
-                cacheNames.map((cacheName) => {
-                    if (cacheName !== CACHE_NAME) {
-                        return caches.delete(cacheName);
-                    }
-                })
-            );
+        caches.keys().then(keys =>
+            Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
+        )
+    );
+});
+
+// Interception des requêtes
+self.addEventListener('fetch', event => {
+    event.respondWith(
+        caches.match(event.request).then(response => {
+            // Si trouvé dans le cache → renvoie
+            if (response) return response;
+
+            // Sinon, tente le réseau
+            return fetch(event.request).catch(() => {
+                // En mode offline : renvoie index.html pour les navigations
+                if (event.request.mode === 'navigate') {
+                    return caches.match(`${BASE_URL}index.html`);
+                }
+            });
         })
     );
-    self.clients.claim();
-});
-
-// Récupération : sert index.html pour toute requête racine
-self.addEventListener('fetch', (event) => {
-    const url = new URL(event.request.url);
-
-    console.log('[SW] Fetch intercepted:', event.request.url);
-
-    // On ne gère que les requêtes de type "document" (pages HTML)
-    if (event.request.destination === 'document') {
-        console.log('[SW] Handling as document:', url.pathname, url.search);
-
-        event.respondWith(
-            (async () => {
-                try {
-                    // Essayer d'aller chercher en ligne
-                    console.log('[SW] Trying network...');
-                    const networkResponse = await fetch(event.request);
-                    console.log('[SW] Network success, returning live response');
-                    return networkResponse;
-                } catch (error) {
-                    console.warn('[SW] Network failed, falling back to cache', error);
-
-                    // En offline, servir index.html depuis le cache
-                    const cachedResponse = await caches.match('./index.html');
-                    if (cachedResponse) {
-                        console.log('[SW] Returning cached ./index.html');
-                        return cachedResponse;
-                    }
-
-                    // Dernier recours : échec total
-                    console.error('[SW] No network and no cache for ./index.html!');
-                    return new Response('Offline and no cache available', {
-                        status: 503,
-                        statusText: 'Service Unavailable'
-                    });
-                }
-            })()
-        );
-    } else {
-        // Autres ressources : cache-first
-        // event.respondWith(
-        caches.match(event.request)
-            .then(response => response || fetch(event.request))
-        // );
-    }
 });

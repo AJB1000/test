@@ -2,38 +2,21 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Carte</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PWA git01</title>
   <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0078d7">
   <style>
-    body {
-      font-family: sans-serif;
-      padding: 20px;
-      background: #f0f0f0;
-    }
-    .info {
-      background: white;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
+    body { font-family: sans-serif; text-align: center; padding: 1em; }
+    #status { margin-top: 1em; color: #0078d7; }
   </style>
 </head>
 <body>
-  <h1>Coordonnées</h1>
-  <div class="info">
-    <p><strong>Latitude :</strong> <span id="lat">—</span></p>
-    <p><strong>Longitude :</strong> <span id="lon">—</span></p>
-    <p><em>État : <span id="status">Chargement...</span></em></p>
-  </div>
+  <h1>PWA git01</h1>
+  <p>Longitude : <span id="lon">–</span></p>
+  <p>Latitude : <span id="lat">–</span></p>
+  <p id="status">Chargement...</p>
 
-  <script>
-    // Enregistrement du Service Worker
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js')
-        .catch(console.error);
-    }
-  </script>
   <script src="script.js"></script>
 </body>
 </html>
