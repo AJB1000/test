@@ -1,8 +1,7 @@
 #!/bin/bash
 # gitinit.sh
 
-# fullname="USER INPUT"
-read -p "Nom du repertoire git: " "dirname"
+read -p "Nom du repertoire git, sans suffixe: " "dirname"
 git init
 git remote add origin https://github.com/AJB1000/$dirname.git
 git add .
