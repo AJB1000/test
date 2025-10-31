@@ -1,6 +1,6 @@
 // sw.js — Cache minimal pour fonctionner hors ligne
 
-const CACHE_NAME = 'v15';
+const CACHE_NAME = 'v16';
 const urlsToCache = [
     '/',
     '/index.html',
