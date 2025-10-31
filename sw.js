@@ -1,13 +1,14 @@
 // sw.js — Cache minimal pour fonctionner hors ligne
 
-const CACHE_NAME = 'v27';
+const CACHE_NAME = 'v28';
+const BASE_URL = self.location.pathname.replace(/sw\.js$/, '');
 const urlsToCache = [
-    './',
-    './index.html',
-    './script.js',
-    './manifest.json',
-    './icon-192.png',
-    './icon-512.png'
+    `${BASE_URL}`,
+    `${BASE_URL}index.html`,
+    `${BASE_URL}script.js`,
+    `${BASE_URL}manifest.json`,
+    `${BASE_URL}icon-192.png`,
+    `${BASE_URL}icon-512.png`
 ];
 
 // Installation : cache les ressources
