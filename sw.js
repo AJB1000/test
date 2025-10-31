@@ -1,6 +1,6 @@
 // sw.js — Cache minimal pour fonctionner hors ligne
 
-const CACHE_NAME = 'v24';
+const CACHE_NAME = 'v25';
 const urlsToCache = [
     './',
     './index.html',
@@ -71,14 +71,14 @@ self.addEventListener('fetch', (event) => {
                     console.warn('[SW] Network failed, falling back to cache', error);
 
                     // En offline, servir index.html depuis le cache
-                    const cachedResponse = await caches.match('/index.html');
+                    const cachedResponse = await caches.match('./index.html');
                     if (cachedResponse) {
-                        console.log('[SW] Returning cached /index.html');
+                        console.log('[SW] Returning cached ./index.html');
                         return cachedResponse;
                     }
 
                     // Dernier recours : échec total
-                    console.error('[SW] No network and no cache for /index.html!');
+                    console.error('[SW] No network and no cache for ./index.html!');
                     return new Response('Offline and no cache available', {
                         status: 503,
                         statusText: 'Service Unavailable'
