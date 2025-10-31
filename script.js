@@ -20,3 +20,5 @@ if ('serviceWorker' in navigator) {
         .then(reg => console.log('Service Worker enregistré', reg))
         .catch(err => console.error('Erreur SW', err));
 }
+
+document.getElementById('status').textContent += ` | Version cache: ${CACHE_NAME}`
