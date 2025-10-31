@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pwa-git01-v1';
+const CACHE_NAME = 'pwa-git01-v2';
 const BASE_URL = self.location.pathname.replace(/sw\.js$/, '');
 
 const urlsToCache = [
@@ -10,7 +10,6 @@ const urlsToCache = [
     `${BASE_URL}icons/icon-512.png`
 ];
 
-// Installation et mise en cache
 self.addEventListener('install', event => {
     console.log('[SW] Installation');
     self.skipWaiting();
@@ -19,7 +18,6 @@ self.addEventListener('install', event => {
     );
 });
 
-// Activation : suppression anciens caches
 self.addEventListener('activate', event => {
     console.log('[SW] Activation');
     self.clients.claim();
@@ -30,20 +28,29 @@ self.addEventListener('activate', event => {
     );
 });
 
-// Interception des requêtes
 self.addEventListener('fetch', event => {
-    event.respondWith(
-        caches.match(event.request).then(response => {
-            // Si trouvé dans le cache → renvoie
-            if (response) return response;
+    const requestURL = new URL(event.request.url);
 
-            // Sinon, tente le réseau
-            return fetch(event.request).catch(() => {
-                // En mode offline : renvoie index.html pour les navigations
-                if (event.request.mode === 'navigate') {
-                    return caches.match(`${BASE_URL}index.html`);
-                }
-            });
-        })
-    );
+    // On intercepte uniquement les requêtes du même domaine
+    if (requestURL.origin === location.origin) {
+        event.respondWith(
+            caches.match(event.request).then(response => {
+                // 1️⃣ Si on a une version dans le cache, on la renvoie
+                if (response) return response;
+
+                // 2️⃣ Sinon, on essaie le réseau
+                return fetch(event.request).catch(() => {
+                    // 3️⃣ Si offline et la requête est pour index.html (même avec paramètres)
+                    if (
+                        event.request.mode === 'navigate' ||
+                        requestURL.pathname.endsWith('index.html')
+                    ) {
+                        return caches.match(`${BASE_URL}index.html`);
+                    }
+                    // 4️⃣ En dernier recours, on renvoie une réponse vide (pas undefined)
+                    return new Response('Offline', { status: 503, statusText: 'Offline' });
+                });
+            })
+        );
+    }
 });
