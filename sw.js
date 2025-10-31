@@ -1,6 +1,6 @@
 // sw.js — Cache minimal pour fonctionner hors ligne
 
-const CACHE_NAME = 'v23';
+const CACHE_NAME = 'v24';
 const urlsToCache = [
     './',
     './index.html',
@@ -86,11 +86,11 @@ self.addEventListener('fetch', (event) => {
                 }
             })()
         );
-    }
-
-    // Autres ressources : cache-first
-    event.respondWith(
+    } else {
+        // Autres ressources : cache-first
+        // event.respondWith(
         caches.match(event.request)
             .then(response => response || fetch(event.request))
-    );
+        // );
+    }
 });
