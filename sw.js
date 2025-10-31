@@ -42,10 +42,7 @@ self.addEventListener('fetch', event => {
                 // 2️⃣ Sinon, on essaie le réseau
                 return fetch(event.request).catch(() => {
                     // 3️⃣ Si offline et la requête est pour index.html (même avec paramètres)
-                    if (
-                        event.request.mode === 'navigate' ||
-                        requestURL.pathname.endsWith('index.html')
-                    ) {
+                    if (event.request.mode === 'navigate' || requestURL.pathname.endsWith('index.html')) {
                         return caches.match(`${BASE_URL}index.html`);
                     }
                     // 4️⃣ En dernier recours, on renvoie une réponse vide (pas undefined)
