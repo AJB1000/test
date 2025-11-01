@@ -1,5 +1,5 @@
-// === git03 ===
-const CACHE_VERSION = 'pwa-git03-v1';
+// === git04 ===
+const CACHE_VERSION = 'pwa-git03-v8';
 
 // --- Parse URL parameters ---
 const params = new URLSearchParams(window.location.search);
@@ -14,9 +14,8 @@ for (const [key, val] of params.entries()) {
 }
 
 // --- Update static fields immediately ---
-// Math.round(1000.2222*100,2)/100
-document.getElementById('lon').textContent = Math.round(lon * 1000) / 1000 ?? '?';
-document.getElementById('lat').textContent = Math.round(lat * 1000) / 1000 ?? '?';
+document.getElementById('lon').textContent = lon ? Math.round(lon * 1000) / 1000 : '?';
+document.getElementById('lat').textContent = lat ? Math.round(lat * 1000) / 1000 : '?';
 document.getElementById('swVersion').textContent = CACHE_VERSION;
 
 // --- Build links (base) ---
@@ -57,11 +56,12 @@ if (offline) {
     buildLinks();
     getLocalityGeoNames(lat, lon)
         .then(locality => {
+            if (!locality) locality = 'Localité inconnue';
             document.getElementById('locality').textContent = locality;
             buildLinks(locality, false);
         })
         .catch(err => {
-            console.error(err);
+            console.error('Erreur getLocalityGeoNames', err);
             document.getElementById('locality').textContent = 'Localité inconnue';
         });
 }
@@ -72,6 +72,13 @@ if ('serviceWorker' in navigator) {
         .then(reg => console.log('Service worker enregistré', reg.scope))
         .catch(err => console.error('Erreur SW:', err));
 }
+
+navigator.serviceWorker.ready.then((registration) => {
+    registration.active.postMessage({
+        type: 'USE_NEW_CACHE',
+        newCacheName: CACHE_VERSION
+    });
+});
 
 // === GeoNames (Nominatim fallback) ===
 async function getLocalityGeoNames(lat, lon) {
@@ -91,3 +98,4 @@ async function getLocalityGeoNames(lat, lon) {
         return 'Inconnue (offline ?)';
     }
 }
+
