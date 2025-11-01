@@ -1,22 +1,78 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PWA git01</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PWA git02</title>
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
-  <meta name="theme-color" content="#0078d7">
   <style>
-    body { font-family: sans-serif; text-align: center; padding: 1em; }
-    #status { margin-top: 1em; color: #0078d7; }
+    body {
+      font-family: system-ui, sans-serif;
+      margin: 0;
+      padding: 1em;
+      background: #f8f9fa;
+      color: #333;
+    }
+    header, footer {
+      text-align: center;
+      padding: 0.5em;
+      background: #0078d7;
+      color: white;
+      border-radius: 8px;
+    }
+    section {
+      margin-top: 1em;
+      padding: 1em;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    a {
+      color: #0078d7;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    a.disabled {
+      color: gray;
+      pointer-events: none;
+      text-decoration: line-through;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      border-bottom: 1px solid #ddd;
+      padding: 0.5em;
+    }
+    #status {
+      text-align: center;
+      margin-top: 0.5em;
+      color: #666;
+    }
   </style>
 </head>
 <body>
-  <h1>PWA git01</h1>
-  <p>Longitude : <span id="lon">–</span></p>
-  <p>Latitude : <span id="lat">–</span></p>
-  <p id="status">Chargement...</p>
+  <header>
+    <h1 id="locality">Chargement...</h1>
+    <p>Lon: <span id="lon">?</span> | Lat: <span id="lat">?</span></p>
+  </header>
+
+  <section id="links">
+    <h2>Liens utiles</h2>
+    <div id="linkList">Chargement des liens...</div>
+  </section>
+
+  <section id="info">
+    <h2>Paramètres</h2>
+    <table id="paramTable"></table>
+  </section>
+
+  <footer>
+    <p>Version SW: <span id="swVersion">?</span></p>
+    <p id="status"></p>
+  </footer>
 
   <script src="script.js"></script>
 </body>
