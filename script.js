@@ -55,17 +55,7 @@ if (offline) {
 } else {
     status.textContent = 'En ligne';
     buildLinks();
-    // Essayons d’obtenir la clé depuis app.cfg
-    loadApiKey()
-        .then(apiKey => {
-            if (apiKey) {
-                console.log("Utilisation de Google Maps API");
-                return getLocalityGoogle(lat, lon, apiKey);
-            } else {
-                console.log("Fichier app.cfg absent : bascule sur GeoNames");
-                return getLocalityGeoNames(lat, lon);
-            }
-        })
+    getLocalityGeoNames(lat, lon)
         .then(locality => {
             document.getElementById('locality').textContent = locality;
             buildLinks(locality, false);
@@ -81,50 +71,6 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js')
         .then(reg => console.log('Service worker enregistré', reg.scope))
         .catch(err => console.error('Erreur SW:', err));
-}
-
-// === Chargement de la clé depuis app.cfg ===
-// Priorité : dossier local /oruxmaps/app.cfg → sinon fallback vers ./app.cfg → sinon null
-async function loadApiKey() {
-    // Essaye d'abord le fichier local (ex: Android/oruxmaps/app.cfg)
-    const tryPaths = [
-        '/oruxmaps/app.cfg',  // clé privée locale
-        './app.cfg'           // fallback GitHub (facultatif)
-    ];
-
-    for (const path of tryPaths) {
-        try {
-            const resp = await fetch(path);
-            if (!resp.ok) continue;
-            const text = await resp.text();
-            const match = text.match(/GOOGLE_API_KEY\s*=\s*(.+)/);
-            if (match) {
-                console.log(`Clé API trouvée dans ${path}`);
-                return match[1].trim();
-            }
-        } catch (err) {
-            // Ignore les erreurs (fichier non accessible ou refusé)
-            console.warn(`Pas de clé dans ${path}: ${err.message}`);
-        }
-    }
-
-    console.warn('Aucune clé API trouvée → bascule sur GeoNames');
-    return null;
-}
-
-
-// === Google Reverse Geocoding ===
-async function getLocalityGoogle(lat, lon, apiKey) {
-    const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lon}&key=${apiKey}&language=fr`;
-    const response = await fetch(url);
-    if (!response.ok) throw new Error('Erreur API Google Maps');
-    const data = await response.json();
-
-    const locality = data.results[0]?.address_components.find(c =>
-        c.types.includes('locality')
-    )?.long_name;
-
-    return locality || 'Localité inconnue (Google)';
 }
 
 // === GeoNames (Nominatim fallback) ===

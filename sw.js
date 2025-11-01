@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pwa-git02-v3';
+const CACHE_NAME = 'pwa-git02-v4';
 const BASE_URL = self.location.pathname.replace(/sw\.js$/, '');
 
 const urlsToCache = [
