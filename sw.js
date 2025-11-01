@@ -1,4 +1,4 @@
-let CACHE_NAME = 'pwa-git03-v4';
+let CACHE_NAME = 'pwa-git03-v8';
 const BASE_URL = self.location.pathname.replace(/sw\.js$/, '');
 
 const urlsToCache = [
@@ -49,19 +49,6 @@ self.addEventListener('fetch', event => {
                     return new Response('Offline', { status: 503, statusText: 'Offline' });
                 });
             })
-        );
-    }
-});
-
-self.addEventListener('message', event => {
-    if (event.data.type === 'USE_NEW_CACHE') {
-        CACHE_NAME = event.data.newCacheName;
-        console.log(CACHE_NAME, '[SW] Nettoyage');
-        self.clients.claim();
-        event.waitUntil(
-            caches.keys().then(keys =>
-                Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
-            )
         );
     }
 });

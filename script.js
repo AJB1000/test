@@ -73,13 +73,6 @@ if ('serviceWorker' in navigator) {
         .catch(err => console.error('Erreur SW:', err));
 }
 
-navigator.serviceWorker.ready.then((registration) => {
-    registration.active.postMessage({
-        type: 'USE_NEW_CACHE',
-        newCacheName: CACHE_VERSION
-    });
-});
-
 // === GeoNames (Nominatim fallback) ===
 async function getLocalityGeoNames(lat, lon) {
     try {
